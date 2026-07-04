@@ -140,7 +140,11 @@ class ChatService:
         else:
             self.gizmo_id = None
 
-        if "o3-mini-high" in self.origin_model:
+        if "gpt-5.5" in self.origin_model:
+            self.req_model = "gpt-5.5"  # GPT-5.5 with thinking
+        elif "gpt-5" in self.origin_model:
+            self.req_model = "gpt-5"
+        elif "o3-mini-high" in self.origin_model:
             self.req_model = "o3-mini-high"
         elif "o3-mini-medium" in self.origin_model:
             self.req_model = "o3-mini-medium"
@@ -335,9 +339,11 @@ class ChatService:
             "reset_rate_limits": False,
             "suggestions": [],
             "supported_encodings": [],
+            "thinking": self.data.get("thinking", False),
             "system_hints": [],
             "timezone": "America/Los_Angeles",
             "timezone_offset_min": -480,
+            "reasoning_effort": self.data.get("reasoning_effort", None),
             "variant_purpose": "comparison_implicit",
             "websocket_request_id": f"{uuid.uuid4()}",
         }
