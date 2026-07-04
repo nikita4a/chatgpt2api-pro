@@ -19,11 +19,15 @@ moderation_message = "I'm sorry, I cannot provide or engage in any content relat
 
 
 async def format_not_stream_response(response, prompt_tokens, max_tokens, model):
+    conversation_id = None
+    message_id = None
     chat_id = f"chatcmpl-{''.join(random.choice(string.ascii_letters + string.digits) for _ in range(29))}"
     system_fingerprint_list = model_system_fingerprint.get(model, None)
     system_fingerprint = random.choice(system_fingerprint_list) if system_fingerprint_list else None
     created_time = int(time.time())
     all_text = ""
+    conversation_id = None
+    message_id = None
     async for chunk in response:
         try:
             if chunk.startswith("data: [DONE]"):
@@ -35,6 +39,9 @@ async def format_not_stream_response(response, prompt_tokens, max_tokens, model)
                 if not chunk["choices"][0].get("delta"):
                     continue
                 all_text += chunk["choices"][0]["delta"]["content"]
+                if not conversation_id:
+                    conversation_id = chunk.get("conversation_id")
+                    message_id = chunk.get("message_id")
         except Exception as e:
             logger.error(f"Error: {chunk}, error: {str(e)}")
             continue
@@ -68,6 +75,10 @@ async def format_not_stream_response(response, prompt_tokens, max_tokens, model)
     }
     if system_fingerprint:
         data["system_fingerprint"] = system_fingerprint
+    if conversation_id:
+        data["conversation_id"] = conversation_id
+    if message_id:
+        data["message_id"] = message_id
     return data
 
 
