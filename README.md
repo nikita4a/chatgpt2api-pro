@@ -1,27 +1,99 @@
-# CHAT2API
+# ChatGPT2API-Pro 🔥
 
-🤖 一个简单的 ChatGPT TO API 代理
+> Форк [lanqian528/chat2api](https://github.com/lanqian528/chat2api) с расширенной функциональностью
 
-🌟 无需账号即可使用免费、无限的 `GPT-3.5`
+**ChatGPT Web → OpenAI API прокси с Function Calling, MCP, и безлимитной ротацией аккаунтов.**
 
-💥 支持 AccessToken 使用账号，支持 `O3-mini/high`、`O1/mini/Pro`、`GPT-4/4o/mini`、`GPTs`
+## 🚀 Что нового (Pro-версия)
 
-🔍 回复格式与真实 API 完全一致，适配几乎所有客户端
+| Фича | Оригинал | Pro |
+|-------|----------|-----|
+| ChatGPT Web → API | ✅ | ✅ |
+| **Function Calling / Tool Use** | ❌ | ✅ Prompt-engineering |
+| **MCP (Model Context Protocol)** | ❌ | ✅ JSON-RPC 2.0 gateway |
+| **Multi-account rotation** | ✅ | ✅ Безлимит |
+| **Streaming (SSE)** | ✅ | ✅ |
+| **GPT-4o / O1 / O3 / GPT-5** | ✅ | ✅ |
+| **Image generation (DALL-E)** | ✅ | ✅ |
+| **Code Interpreter** | ✅ | ✅ |
+| **GPTs** | ✅ | ✅ |
+| **Web UI (зеркало ChatGPT)** | ✅ | ✅ |
 
-👮 配套用户管理端[Chat-Share](https://github.com/h88782481/Chat-Share)使用前需提前配置好环境变量（ENABLE_GATEWAY设置为True，AUTO_SEED设置为False）
+## 🔧 Быстрый старт
 
+### 1. Получить AccessToken
+1. Зайди на [chatgpt.com](https://chatgpt.com) и залогинься
+2. Открой [chatgpt.com/api/auth/session](https://chatgpt.com/api/auth/session)
+3. Скопируй значение `accessToken`
 
-## 交流群
+### 2. Запуск
+```bash
+# Установка
+pip install -r requirements.txt
 
-[https://t.me/chat2api](https://t.me/chat2api)
+# Создай .env (опционально)
+cp .env.example .env
 
-要提问请先阅读完仓库文档，尤其是常见问题部分。
+# Положи токен в tokens.txt
+echo "твой-access-token" > tokens.txt
 
-提问时请提供：
+# Запуск
+python app.py
+```
 
-1. 启动日志截图（敏感信息打码，包括环境变量和版本号）
-2. 报错的日志信息（敏感信息打码）
-3. 接口返回的状态码和响应体
+### 3. Использование API
+```bash
+# Обычный запрос
+curl http://localhost:5005/v1/chat/completions   -H "Content-Type: application/json"   -H "Authorization: Bearer твой-access-token"   -d '{"model": "gpt-4o", "messages": [{"role": "user", "content": "Привет!"}]}'
+
+# Function Calling
+curl http://localhost:5005/v1/chat/completions   -H "Content-Type: application/json"   -H "Authorization: Bearer твой-access-token"   -d '{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Какая погода в Лондоне?"}],
+    "tools": [{
+      "type": "function",
+      "function": {
+        "name": "get_weather",
+        "description": "Get current weather",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "city": {"type": "string", "description": "City name"}
+          },
+          "required": ["city"]
+        }
+      }
+    }]
+  }'
+```
+
+### 4. MCP Endpoint
+```bash
+# Инициализация
+curl -X POST http://localhost:5005/mcp   -H "Content-Type: application/json"   -H "Authorization: Bearer твой-access-token"   -d '{"jsonrpc": "2.0", "method": "initialize", "id": 1}'
+
+# Список инструментов
+curl -X POST http://localhost:5005/mcp   -H "Content-Type: application/json"   -H "Authorization: Bearer твой-access-token"   -d '{"jsonrpc": "2.0", "method": "tools/list", "id": 2}'
+```
+
+## 🛡️ Безлим
+
+- Положи несколько токенов в `tokens.txt` (по одному на строку)
+- Система автоматически ротирует токены при 429/403
+- Можно использовать RefreshToken — авто-обновление каждые 2 дня
+
+## 📦 Модели
+
+| Модель | Требуется подписка |
+|--------|-------------------|
+| `gpt-3.5-turbo` | Нет (бесплатно) |
+| `gpt-4o` | Plus/Pro |
+| `gpt-4o-mini` | Plus/Pro |
+| `gpt-4.5o` | Pro |
+| `o1` / `o1-mini` / `o1-pro` | Pro |
+| `o3-mini` / `o3-mini-high` | Pro |
+| `gpt-5` | Pro |
+| `gpt-4-gizmo-g-*` (GPTs) | Plus/Pro |
 
 ## 功能
 

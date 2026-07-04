@@ -38,6 +38,10 @@ from app import app
 
 import api.chat2api
 
+# Register MCP (Model Context Protocol) endpoints
+from api.mcp import register_mcp_endpoints
+register_mcp_endpoints(app, api_prefix, security_scheme)
+
 if enable_gateway:
     import gateway.share
     import gateway.login

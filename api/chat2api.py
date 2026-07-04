@@ -14,6 +14,7 @@ from chatgpt.authorization import refresh_all_tokens
 from utils.Logger import logger
 from utils.configs import api_prefix, scheduled_refresh
 from utils.retry import async_retry
+from api.function_calling import inject_tools_into_messages, parse_tool_calls_from_response, build_openai_tool_call_response
 
 scheduler = AsyncIOScheduler()
 
